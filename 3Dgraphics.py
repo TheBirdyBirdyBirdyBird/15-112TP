@@ -61,8 +61,8 @@ class Renderer():
 
     def render(self, batch):
         view = []
-        start = self.angRes[1]/8*batch
-        stop = start + self.angRes[1]/8
+        start = self.rays[1]/8*batch
+        stop = start + self.rays[1]/8
         for i in range(math.floor(start), math.floor(stop)):
             view.append([])
             y = i * self.angRes[1] - self.height/2
@@ -70,31 +70,7 @@ class Renderer():
                 x = j * self.angRes[0] - self.width/2
                 view[-1].append(self.castRay(x, y))
         return view
-    '''
-
-        for y in fRange(-int(self.height/2), int(self.height/2), self.angRes[1]):
-            j = 0
-            for x in fRange(-int(self.width/2), int(self.width/2), self.angRes[0]):
-
-        offset = batch*self.angRes[1]
-        print('rendering', offset)
-        #drawRect(0, 0, 500, 500, fill='black')
-        i = 0
-        for y in fRange(-int(self.height/2)+offset, int(self.height/2), self.angRes[1]*8):
-            j = 0
-            for x in fRange(-int(self.width/2), int(self.width/2), self.angRes[0]):
-                views[i*8+batch].append(self.castRay(x, y))
-                if i >= 1 and j >= 1:
-                    pass
-                    #print(len(view[i])- j)
-                    #self.renderSquare(j, i*8+batch, view[-2][-2], view[-2][-1], view[-1][-2], view[-1][-1], app, batch)
-                    #self.renderSquare(j, i*8+batch, view[i-1][j-1], view[i-1][j], view[i][j-1], view[i][j], app, batch)
-                j += 1
-            i += 1
-        #views.append(view)
-        #for row in view: print(row)
-        '''
-
+    
     def renderSquare(self, x, y, p1, p2, p3, p4, app):
         #print(p1, p2, p3, p4)
         # v1: render average of points, assume light source at camera, 100% reflectivity
@@ -112,12 +88,7 @@ class Renderer():
         drawRect(self.pixelDims[0]*x, self.pixelDims[1]*y, self.pixelDims[0], self.pixelDims[1], 
                  fill=color, align='bottom-right')
         return appLum
-
-            
-            
-            
         
-
     def castRay(self, x, y):
         gX = math.radians(self.dir[0] + x)
         gY = math.radians(self.dir[1] + y) 
@@ -164,11 +135,12 @@ def onAppStart(app):
     app.setMaxShapeCount(100000)
 
 def redrawAll(app):
-    views = []
-    for i in range(app.r.rays[1]):
-        views.append([])
-    p = multiprocessing.Pool(processes=8)
-    data = 
+    view = []
+    for i in range(8):
+        for row in app.r.render(i):
+            view.append(row)
+    
+    #p = multiprocessing.Pool(processes=8)
     '''processes = []
     for i in range(8):
         #processes.append(threading.Thread(target=app.r.render, args=(app, i, views)))
@@ -179,10 +151,10 @@ def redrawAll(app):
         process.join()'''
     
     #for row in view: print(row)
-    for j in range(len(views)):
-        for i in range(len(views[0])):
+    for j in range(len(view)):
+        for i in range(len(view[0])):
             if i >= 1 and j >= 1:
-                app.r.renderSquare(j, i, views[j-1][i-1], views[j-1][i], views[j][i-1], views[j][i], app)
+                app.r.renderSquare(j, i, view[j-1][i-1], view[j-1][i], view[j][i-1], view[j][i], app)
             
     '''threads = [threading.Thread(target=app.r.render, args=(app, i)) for i in range(8)]
     for thread in threads:
