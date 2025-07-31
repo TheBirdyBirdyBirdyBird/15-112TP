@@ -229,7 +229,7 @@ def applyRelativity(color, motion, rayDir, c):
     # convert hue to wavelength linearly, red (0)->700, deep purple (5/6)->380
     wavelength = (1-color[0]) * 384 + 316 
     
-    observed = wavelengthRatio * wavelength
+    observed = wavelengthRatio * wavelength # Wikipedia
     if observed > 700:
         color[2] /= observed - 699
         observed = 700
@@ -239,7 +239,7 @@ def applyRelativity(color, motion, rayDir, c):
     color[0] = (316 - observed) / 384 + 1
 
     # Headlight effect
-    color[1] = constrain(color[1] * wavelengthRatio ** 2, 0, 1)
+    color[1] = constrain(color[1] * wavelengthRatio ** 2, 0, 1) # Wikipedia
 
     #reformat data
     color = (np.array(colorsys.hsv_to_rgb(*color)) * 255).astype(int)
@@ -270,7 +270,6 @@ def intersectTriangle(dir, pos, triangle):
 
 @nb.jit(nb.f8(nb.f8[:], nb.f8[:], nb.f8[:]))
 def intersectSphere(dir, pos, sphere):
-    # self derived
     dir = np.ascontiguousarray(dir) # dot product is faster on contigious arrays
     relPos = sphere[:3] - pos
     projection = np.dot(dir, relPos)
