@@ -1,4 +1,6 @@
 # 3rd overhaul
+# all the code is completely self-written using Python documentation as reference without the use of walkthroughs or AI
+# Some equations in certain cited sections were obtained from Wikipedia
 
 from cmu_graphics import *
 import math, time
@@ -222,14 +224,14 @@ def renderScreen(app):
 
 def applyRelativity(color, motion, rayDir, c):
     relSpeed = -np.dot(motion, rayDir)
-    wavelengthRatio = ((1 + relSpeed/c) / (1 - relSpeed/c)) ** 0.5 # Doppler factor, Wikipedia
+    wavelengthRatio = ((1 + relSpeed/c) / (1 - relSpeed/c)) ** 0.5 # Doppler factor, https://en.wikipedia.org/wiki/Relativistic_Doppler_effect
     color = list(colorsys.rgb_to_hsv(*(color/255))) # HSV colors are easier to adjust to match relativistic effects
 
     # Doppler effect
     # convert hue to wavelength linearly, red (0)->700, deep purple (5/6)->380
     wavelength = (1-color[0]) * 384 + 316 
     
-    observed = wavelengthRatio * wavelength # Wikipedia
+    observed = wavelengthRatio * wavelength # https://en.wikipedia.org/wiki/Relativistic_Doppler_effect
     if observed > 700:
         color[2] /= observed - 699
         observed = 700
@@ -239,7 +241,7 @@ def applyRelativity(color, motion, rayDir, c):
     color[0] = (316 - observed) / 384 + 1
 
     # Headlight effect
-    color[1] = constrain(color[1] * wavelengthRatio ** 2, 0, 1) # Wikipedia
+    color[1] = constrain(color[1] * wavelengthRatio ** 2, 0, 1) # https://en.wikipedia.org/wiki/Relativistic_beaming
 
     #reformat data
     color = (np.array(colorsys.hsv_to_rgb(*color)) * 255).astype(int)
@@ -256,7 +258,7 @@ def drawLightSlider(app):
 
 @nb.jit(nb.f8(nb.f8[:], nb.f8[:], nb.f8[:,:]))
 def intersectTriangle(dir, pos, triangle):
-    # Moller-Trumbore algorithm, did not use code references to help. 
+    # Möller-Trumbore algorithm, did not use code references to help. https://en.wikipedia.org/wiki/M%C3%B6ller%E2%80%93Trumbore_intersection_algorithm
     triangle = np.ascontiguousarray(triangle)
     dir = np.ascontiguousarray(dir)
     if np.dot(triangle[3], dir) == 0:
